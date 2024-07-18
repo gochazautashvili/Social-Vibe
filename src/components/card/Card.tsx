@@ -8,6 +8,12 @@ import {
   getIsUserFollowingCurrentUser,
 } from "@/data/follow";
 import { getCommentsByPostId } from "@/data/comments";
+import useIsLikedPostByPostId from "@/hooks/useIsLikedPostByPostId";
+import useIsSavedPostByPostId from "@/hooks/useIsSavedPostByPostId";
+import useIsFollowedByCurrentUser from "@/hooks/useIsFollowedByCurrentUser";
+import useIsFollowingCurrentUser from "@/hooks/useIsFollowingCurrentUser";
+import usePostComments from "@/hooks/usePostComments";
+import { CommentsWhitUserAndLike } from "./Controller";
 
 const Controller = dynamic(() => import("./Controller"), {
   ssr: false,
@@ -16,14 +22,24 @@ const Controller = dynamic(() => import("./Controller"), {
   ),
 });
 
-const Card = async ({ post }: { post: PostsWhitUser }) => {
-  const isLiked = await getIsLikedPostByPostId(post.id);
-  const isSaved = await getIsSavedPostByPostId(post.id);
-  const currentUserFollowUser = await getIsCurrentUserFollowUser(post.userId);
-  const userFollowCurrentUser = await getIsUserFollowingCurrentUser(
+const Card = ({ post }: { post: PostsWhitUser }) => {
+  const { data: isLiked } = useIsLikedPostByPostId(post.id);
+  const { data: isSaved } = useIsSavedPostByPostId(post.id);
+  const { data: currentUserFollowUser } = useIsFollowedByCurrentUser(
     post.userId
   );
-  const comments = await getCommentsByPostId(post.id, 0);
+  const { data: userFollowCurrentUser } = useIsFollowingCurrentUser(
+    post.userId
+  );
+  const { data: comments } = usePostComments(post.id);
+
+  // const isLiked = await getIsLikedPostByPostId(post.id);
+  // const isSaved = await getIsSavedPostByPostId(post.id);
+  // const currentUserFollowUser = await getIsCurrentUserFollowUser(post.userId);
+  // const userFollowCurrentUser = await getIsUserFollowingCurrentUser(
+  //   post.userId
+  // );
+  // const comments = await getCommentsByPostId(post.id, 0);
 
   return (
     <div className="w-full max-w-[468px]">
@@ -44,11 +60,11 @@ const Card = async ({ post }: { post: PostsWhitUser }) => {
       </div>
       <Controller
         post={post}
-        isLiked={isLiked}
-        isSaved={isSaved}
-        currentUserFollowUser={currentUserFollowUser}
-        userFollowCurrentUser={userFollowCurrentUser}
-        comments={comments}
+        isLiked={isLiked as boolean}
+        isSaved={isSaved as boolean}
+        currentUserFollowUser={currentUserFollowUser as boolean}
+        userFollowCurrentUser={userFollowCurrentUser as boolean}
+        comments={comments || []}
       />
     </div>
   );

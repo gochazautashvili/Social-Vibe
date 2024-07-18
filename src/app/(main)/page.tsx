@@ -1,6 +1,6 @@
 import { CommentSkeleton } from "@/components/card/Controller";
 import Posts from "@/components/Posts";
-import { getPosts } from "@/data/getPosts";
+import { getPosts } from "@/data/posts";
 import { getUsers } from "@/data/user";
 import { currentUser } from "@clerk/nextjs/server";
 import { Post, User } from "@prisma/client";
@@ -15,7 +15,7 @@ export type PostsWhitUser = Post & { user: User };
 
 const Home = async () => {
   const user = await currentUser();
-  const posts: JSX.Element[] = await getPosts(0);
+  const posts: PostsWhitUser[] = await getPosts(0);
   const users: User[] = await getUsers();
 
   return (

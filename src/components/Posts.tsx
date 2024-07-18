@@ -2,9 +2,11 @@
 import React, { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { Loader2 } from "lucide-react";
-import { getPosts } from "@/data/getPosts";
+import { getPosts } from "@/data/posts";
+import { PostsWhitUser } from "@/app/(main)/page";
+import Card from "./card/Card";
 
-const Posts = ({ posts: initialPosts }: { posts: JSX.Element[] }) => {
+const Posts = ({ posts: initialPosts }: { posts: PostsWhitUser[] }) => {
   const { ref, inView } = useInView();
   const [page, setPage] = useState(0);
   const [lestPost, setLestPost] = useState(false);
@@ -31,7 +33,9 @@ const Posts = ({ posts: initialPosts }: { posts: JSX.Element[] }) => {
 
   return (
     <section className="flex flex-col items-center gap-10 flex-[6]">
-      {posts}
+      {posts.map((post) => {
+        return <Card key={post.id} post={post} />;
+      })}
       {lestPost && <p>There is&apos;t more posts!</p>}
       {!lestPost && posts.length < 10 && (
         <div className="flex justify-center w-full" ref={ref}>

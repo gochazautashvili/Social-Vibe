@@ -36,7 +36,6 @@ export const getIsLikedPostByPostId = async (postId: string) => {
 
     const isLiked = likes.some((like) => like.userId === userId);
 
-    revalidatePath("/");
     return isLiked;
   } catch (error) {
     throw new Error("Something went wrong");

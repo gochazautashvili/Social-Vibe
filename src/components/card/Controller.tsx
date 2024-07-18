@@ -35,6 +35,8 @@ import { cn } from "@/lib/utils";
 import { SavePost } from "@/actions/posts";
 import { useInView } from "react-intersection-observer";
 import { Loader2 } from "lucide-react";
+import useIsLikedPostByPostId from "@/hooks/useIsLikedPostByPostId";
+import useIsSavedPostByPostId from "@/hooks/useIsSavedPostByPostId";
 
 export type CommentsWhitUserAndLike = Comment & { user: User } & {
   like: Like[];
@@ -206,39 +208,27 @@ const TopController = ({
   isSaved: boolean;
 }) => {
   const [isLiking, startLiking] = useTransition();
-  const [optimisticIsLike, addOptimisticIsLike] = useOptimistic(
-    isLiked,
-    (state: boolean) => {
-      return !state;
-    }
-  );
-
   const [isSaving, startSaving] = useTransition();
-  const [optimisticIsSave, addOptimisticIsSave] = useOptimistic(
-    isSaved,
-    (state: boolean) => {
-      return !state;
-    }
-  );
 
-  const handleLikePost = async () => {
+  const { mutate: mutateLike, data: like } = useIsLikedPostByPostId(postId);
+  const { mutate: mutateSave, data: saved } = useIsSavedPostByPostId(postId);
+
+  const handleLikePost = () => {
     if (isLiking) return;
 
-    startLiking(() => {
-      addOptimisticIsLike("");
+    mutateLike(LikePost(postId), {
+      optimisticData: !like,
+      rollbackOnError: true,
     });
-
-    await LikePost(postId);
   };
 
-  const handleSavePost = async () => {
+  const handleSavePost = () => {
     if (isSaving) return;
 
-    startSaving(() => {
-      addOptimisticIsSave("");
+    mutateSave(SavePost(postId), {
+      optimisticData: !saved,
+      rollbackOnError: true,
     });
-
-    await SavePost(postId);
   };
 
   return (
@@ -250,7 +240,7 @@ const TopController = ({
           variant="ghost"
           type="button"
         >
-          {optimisticIsLike ? (
+          {isLiked ? (
             <GoHeartFill fill="red" className="cursor-pointer" size={28} />
           ) : (
             <GoHeart className="cursor-pointer" size={28} />
@@ -290,7 +280,7 @@ const TopController = ({
         >
           <title>Save</title>
           <polygon
-            fill={optimisticIsSave ? "blue" : "none"}
+            fill={isSaved ? "blue" : "none"}
             points="20 21 12 13.44 4 21 4 3 20 3 20 21"
             stroke="currentColor"
             strokeLinecap="round"

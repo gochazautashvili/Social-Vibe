@@ -71,7 +71,7 @@ export const LikePost = async (postId: string) => {
     });
 
     if (existingLike) {
-      await db.post.update({
+      const post = await db.post.update({
         where: { id: postId },
         data: {
           likeCount: {
@@ -83,9 +83,14 @@ export const LikePost = async (postId: string) => {
             },
           },
         },
+        select: { like: true },
       });
+
+      const isLiked = post.like.some((like) => like.userId === userId);
+
+      return isLiked;
     } else {
-      await db.post.update({
+      const post = await db.post.update({
         where: { id: postId },
         data: {
           likeCount: {
@@ -97,12 +102,14 @@ export const LikePost = async (postId: string) => {
             },
           },
         },
+        select: { like: true },
       });
-    }
 
-    revalidatePath("/");
-    return { success: true, message: "success" };
+      const isLiked = post.like.some((like) => like.userId === userId);
+
+      return isLiked;
+    }
   } catch (error) {
-    if (!userId) throw new Error("Something went wrong :(, while post liking");
+    throw new Error("Something went wrong :(, while post liking");
   }
 };

@@ -77,17 +77,20 @@ export const SavePost = async (postId: string) => {
       await db.saved.delete({
         where: { id: existSaved.id },
       });
+
+      return false;
     } else {
-      await db.saved.create({
+      const save = await db.saved.create({
         data: {
           userId,
           postId,
         },
       });
-    }
 
-    revalidatePath("/");
-    return { success: true, message: "Post successfully saved" };
+      const isSaved = save.userId === userId;
+
+      return isSaved;
+    }
   } catch (error) {
     throw new Error("Error, internal server error");
   }
