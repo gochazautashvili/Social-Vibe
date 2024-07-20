@@ -16,9 +16,7 @@ import {
   FormEventHandler,
   SetStateAction,
   useEffect,
-  useOptimistic,
   useState,
-  useTransition,
 } from "react";
 import CommentCard from "./CommentCard";
 import { Separator } from "../ui/separator";
@@ -31,7 +29,6 @@ import { CreateComment } from "@/actions/comments";
 import { toast } from "../ui/use-toast";
 import { Button } from "../ui/button";
 import { LikePost } from "@/actions/likes";
-import { cn } from "@/lib/utils";
 import { SavePost } from "@/actions/posts";
 import { useInView } from "react-intersection-observer";
 import { Loader2 } from "lucide-react";
@@ -48,22 +45,19 @@ const Controller = ({
   isSaved,
   currentUserFollowUser,
   userFollowCurrentUser,
-  comments: initialComments,
 }: {
   post: PostsWhitUser;
   isLiked: boolean;
   isSaved: boolean;
   currentUserFollowUser: boolean;
   userFollowCurrentUser: boolean;
-  comments: CommentsWhitUserAndLike[];
 }) => {
   const { ref, inView } = useInView();
   const [open, setOpen] = useState(false);
-  const [comments, setComments] =
-    useState<CommentsWhitUserAndLike[]>(initialComments);
+  const [comments, setComments] = useState<CommentsWhitUserAndLike[]>([]);
   const [comment, setComment] = useState("");
   const [isPending, setIsPending] = useState(false);
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(-1);
   const [lestComment, setLestComment] = useState(false);
 
   useEffect(() => {
@@ -116,9 +110,7 @@ const Controller = ({
         postId={post.id}
       />
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger className="text-sm cursor-pointer font-semibold text-gray-400 my-2 hidden">
-          View all {comments.length} comments
-        </DialogTrigger>
+        <DialogTrigger className="text-sm cursor-pointer font-semibold text-gray-400 my-2 hidden"></DialogTrigger>
         <DialogContent className="p-0 w-[95%] max-w-[1200px] overflow-hidden z-50">
           <DialogHeader className="hidden">
             <DialogTitle></DialogTitle>
@@ -133,14 +125,14 @@ const Controller = ({
                 className="object-contain bg-black"
               />
             </div>
-            <div className="flex-[1] p-4">
+            <div className="flex-[1] p-4 h-full relative">
               <PostOwner
                 post={post}
                 currentUserFollowUser={currentUserFollowUser}
                 userFollowCurrentUser={userFollowCurrentUser}
               />
               <Separator />
-              <div className="flex flex-col gap-6 pb-4 mt-6 h-[385px] overflow-y-auto pr-3 scrollbar-thin scrollbar-thumb-gray-900/20 scrollbar-track-white">
+              <div className="flex max-h-[420px] sm:max-h-[360px] flex-col gap-6 pb-4 mt-6 overflow-y-auto pr-3 scrollbar-thin scrollbar-thumb-gray-900/20 scrollbar-track-white">
                 {comments.length > 0 &&
                   comments.map((comment) => {
                     return (
@@ -162,30 +154,32 @@ const Controller = ({
                     There is&apos;n more comment!
                   </p>
                 )}
-                {comments.length >= 8 && !lestComment && (
+                {!lestComment && (
                   <div className="w-full flex justify-center" ref={ref}>
                     <Loader2 className="w-10 h-10 animate-spin" />
                   </div>
                 )}
               </div>
-              <Separator />
-              <div className="my-3">
-                <TopController
-                  setOpen={setOpen}
-                  postId={post.id}
-                  isLiked={isLiked}
-                  isSaved={isSaved}
+              <div className="my-3 sticky bottom-[6px] top-full">
+                <Separator />
+                <div>
+                  <TopController
+                    setOpen={setOpen}
+                    postId={post.id}
+                    isLiked={isLiked}
+                    isSaved={isSaved}
+                  />
+                  <p className="text-xs font-semibold text-gray-500">
+                    {moment(post.createdAt).fromNow()}
+                  </p>
+                </div>
+                <EmojiInput
+                  text={comment}
+                  onSubmit={onSubmit}
+                  setText={setComment}
+                  isPending={isPending}
                 />
-                <p className="text-xs font-semibold text-gray-500">
-                  {moment(post.createdAt).fromNow()}
-                </p>
               </div>
-              <EmojiInput
-                text={comment}
-                onSubmit={onSubmit}
-                setText={setComment}
-                isPending={isPending}
-              />
             </div>
           </div>
         </DialogContent>

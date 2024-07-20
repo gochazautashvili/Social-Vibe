@@ -21,6 +21,7 @@ const config = withUt({
     extend: {
       height: {
         "screen-minus-80": "calc(100dvh - 240px)",
+        "screen-minus-100": "calc(100% - 100px)",
       },
       colors: {
         border: "hsl(var(--border))",

@@ -5,6 +5,17 @@ import { Loader2 } from "lucide-react";
 import { getPosts } from "@/data/posts";
 import { PostsWhitUser } from "@/app/(main)/page";
 import Card from "./card/Card";
+import dynamic from "next/dynamic";
+
+const c = dynamic(() => import("./card/Card"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex flex-col gap-4 w-full max-w-[468px]">
+      <div className="w-full h-10 bg-gray-400 rounded"></div>
+      <div className="lg:h-[500px] md:h-[400px] h-[350px] bg-gray-400 rounded"></div>
+    </div>
+  ),
+});
 
 const Posts = ({ posts: initialPosts }: { posts: PostsWhitUser[] }) => {
   const { ref, inView } = useInView();

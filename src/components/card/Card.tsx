@@ -1,13 +1,8 @@
+"use client";
 import Image from "next/image";
 import PostOwner from "./PostOwner";
 import { PostsWhitUser } from "@/app/(main)/page";
 import dynamic from "next/dynamic";
-import { getIsLikedPostByPostId, getIsSavedPostByPostId } from "@/data/posts";
-import {
-  getIsCurrentUserFollowUser,
-  getIsUserFollowingCurrentUser,
-} from "@/data/follow";
-import { getCommentsByPostId } from "@/data/comments";
 import useIsLikedPostByPostId from "@/hooks/useIsLikedPostByPostId";
 import useIsSavedPostByPostId from "@/hooks/useIsSavedPostByPostId";
 import useIsFollowedByCurrentUser from "@/hooks/useIsFollowedByCurrentUser";
@@ -31,15 +26,6 @@ const Card = ({ post }: { post: PostsWhitUser }) => {
   const { data: userFollowCurrentUser } = useIsFollowingCurrentUser(
     post.userId
   );
-  const { data: comments } = usePostComments(post.id);
-
-  // const isLiked = await getIsLikedPostByPostId(post.id);
-  // const isSaved = await getIsSavedPostByPostId(post.id);
-  // const currentUserFollowUser = await getIsCurrentUserFollowUser(post.userId);
-  // const userFollowCurrentUser = await getIsUserFollowingCurrentUser(
-  //   post.userId
-  // );
-  // const comments = await getCommentsByPostId(post.id, 0);
 
   return (
     <div className="w-full max-w-[468px]">
@@ -64,7 +50,6 @@ const Card = ({ post }: { post: PostsWhitUser }) => {
         isSaved={isSaved as boolean}
         currentUserFollowUser={currentUserFollowUser as boolean}
         userFollowCurrentUser={userFollowCurrentUser as boolean}
-        comments={comments || []}
       />
     </div>
   );
