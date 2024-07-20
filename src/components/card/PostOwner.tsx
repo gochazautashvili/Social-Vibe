@@ -42,6 +42,7 @@ const PostOwner = ({
   const [isDeleting, startDeleting] = useTransition();
   const [isFollowing, startFollowing] = useTransition();
   const [open, setOpen] = useState(false);
+  const [openHover, setOpenHover] = useState(false);
   const router = useRouter();
 
   const handelImageDelete = async (image: string) => {
@@ -105,12 +106,19 @@ const PostOwner = ({
     }
   };
 
+  const handleHoverOpen = () => {
+    setOpenHover((prev) => !prev);
+  };
+
   return (
     <div
       className={cn("flex justify-between mb-4", isDeleting && "animate-pulse")}
     >
-      <HoverCard openDelay={1}>
-        <HoverCardTrigger className="flex items-center gap-2 cursor-pointer">
+      <HoverCard openDelay={1} open={openHover} onOpenChange={setOpenHover}>
+        <HoverCardTrigger
+          onClick={handleHoverOpen}
+          className="flex items-center gap-2 cursor-pointer"
+        >
           <Avatar className="w-10 h-10">
             <AvatarImage src={post.user.avatar} />
             <AvatarFallback>CN</AvatarFallback>

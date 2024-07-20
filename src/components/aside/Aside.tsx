@@ -214,7 +214,7 @@ const Aside = () => {
                 Create
               </p>
             </DialogTrigger>
-            <DialogContent className="w-[95%]">
+            <DialogContent className="w-[90%]">
               <DialogHeader>
                 <DialogTitle className="text-center text-base">
                   Create new post!

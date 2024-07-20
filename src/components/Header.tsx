@@ -13,23 +13,35 @@ import {
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { Switch } from "./ui/switch";
+import { useTheme } from "next-themes";
 
 const Search = dynamic(() => import("./Search"), {
   ssr: false,
   loading: () => (
-    <div className="w-[290px] h-10 animate-pulse bg-primary/20 rounded" />
+    <div className="w-[190px] md:w-[290px] h-10 animate-pulse bg-white rounded" />
   ),
 });
 
 const Header = () => {
   const [search, setSearch] = useState("");
+  const { setTheme, theme } = useTheme();
+
   const pathname = usePathname();
   const message = pathname.includes("/messages");
+
+  const handleThemeChange = () => {
+    if (theme === "light") {
+      setTheme("dark");
+    } else {
+      setTheme("light");
+    }
+  };
 
   return (
     <header
       className={cn(
-        "sticky top-0 md:hidden px-4 sm:px-5 bg-white/30 backdrop-blur-md z-20",
+        "sticky top-0 md:hidden px-4 sm:px-5 bg-white/30 backdrop-blur-md z-20 dark:bg-black dark:py-3",
         message ? "hidden" : ""
       )}
     >
@@ -50,7 +62,12 @@ const Header = () => {
         </DropdownMenu>
         <div className="flex items-center gap-5">
           <Search setSearch={setSearch} />
-          <FaRegHeart size={25} />
+          <Switch
+            onCheckedChange={handleThemeChange}
+            checked={theme === "dark"}
+            id="Dark mode"
+            className="h-4 w-7"
+          />
         </div>
       </nav>
     </header>

@@ -207,15 +207,10 @@ const TopController = ({
   isLiked: boolean;
   isSaved: boolean;
 }) => {
-  const [isLiking, startLiking] = useTransition();
-  const [isSaving, startSaving] = useTransition();
-
   const { mutate: mutateLike, data: like } = useIsLikedPostByPostId(postId);
   const { mutate: mutateSave, data: saved } = useIsSavedPostByPostId(postId);
 
   const handleLikePost = () => {
-    if (isLiking) return;
-
     mutateLike(LikePost(postId), {
       optimisticData: !like,
       rollbackOnError: true,
@@ -223,8 +218,6 @@ const TopController = ({
   };
 
   const handleSavePost = () => {
-    if (isSaving) return;
-
     mutateSave(SavePost(postId), {
       optimisticData: !saved,
       rollbackOnError: true,
@@ -234,12 +227,7 @@ const TopController = ({
   return (
     <div className="flex items-center justify-between mt-3">
       <div className="flex gap-4 items-center">
-        <Button
-          className={cn(isLiking && "animate-pulse")}
-          onClick={handleLikePost}
-          variant="ghost"
-          type="button"
-        >
+        <Button onClick={handleLikePost} variant="ghost" type="button">
           {isLiked ? (
             <GoHeartFill fill="red" className="cursor-pointer" size={28} />
           ) : (
@@ -266,10 +254,7 @@ const TopController = ({
           </svg>
         </div>
       </div>
-      <div
-        onClick={handleSavePost}
-        className={cn("cursor-pointer", isSaving && "animate-pulse")}
-      >
+      <div onClick={handleSavePost} className="cursor-pointer">
         <svg
           aria-label="Save"
           fill="currentColor"

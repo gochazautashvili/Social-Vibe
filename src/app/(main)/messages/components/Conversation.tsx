@@ -60,7 +60,7 @@ const Conversation = ({
           return current;
         }
 
-        return [...current, message];
+        return [message, ...current];
       });
 
       ScrollRef.current?.scrollIntoView();
@@ -100,12 +100,12 @@ const Conversation = ({
             <UserMessage key={message.id} message={message} owner={owner} />
           );
         })}
-
-        {!isLestMessage ? (
+        {!isLestMessage && messages.length > 11 && (
           <div className="w-full flex justify-center mb-10" ref={ref}>
             <Loader2 className="w-10 h-10 animate-spin" />
           </div>
-        ) : (
+        )}
+        {isLestMessage && messages.length > 11 && (
           <p className="text-xs font-bold text-center">
             There is&apos;n more message!
           </p>
